@@ -38,6 +38,28 @@ int buscaSequencial(LISTA* l, TIPOCHAVE ch) {
     return -1;
 }
 
+int buscaSentinela(LISTA* l, TIPOCHAVE ch) {
+    int i = 0;
+    l->A[l->nroElem].chave = ch;
+    while(l->A[i].chave != ch) i++;
+    if (i == l->nroElem) return -1;
+    else return i;
+}
+
+int buscaBinaria(LISTA* l, TIPOCHAVE ch) {
+    int esq, dir, meio;
+    esq = 0;
+    dir = l->nroElem-1;
+    while(esq <= dir) {
+        meio = ((esq + dir) / 2);
+        if(l->A[meio].chave == ch) return meio;
+        else {
+            if(l->A[meio].chave < ch) esq = meio + 1;
+            else dir = meio - 1;
+        }
+    }
+}
+
 bool inserirElemLista(LISTA* l, REGISTRO reg, int i) {
     int j;
     if ((l->nroElem == MAX) || (i < 0) || (i > l->nroElem))
@@ -49,9 +71,21 @@ bool inserirElemLista(LISTA* l, REGISTRO reg, int i) {
     return true;
 }
 
+bool inserirElemListaOrd(LISTA* l, REGISTRO reg) {
+    if(l->nroElem >= MAX) return false;
+    int pos = l->nroElem;
+    while(pos > 0 && l->A[pos-1].chave > reg.chave) {
+        l->A[pos] = l->A[pos-1];
+        pos --;
+    }
+    l->A[pos] = reg;
+    l->nroElem++;
+}
+
 bool excluirElemLista(TIPOCHAVE ch, LISTA* l) {
     int pos, j;
-    pos = buscaSequencial(l,ch);
+    // pos = buscaSequencial(l, ch);
+    pos = buscaBinaria(l, ch);
     if(pos == -1) return false;
     for(j = pos; j < l->nroElem-1;j++)
         l->A[j] = l->A[j+1];
